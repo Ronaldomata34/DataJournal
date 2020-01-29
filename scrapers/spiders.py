@@ -1,14 +1,39 @@
-import sys
-import math
-import json
-from datetime import datetime, timedelta
-from newsapi import NewsApiClient
-
 import requests
+from bs4 import BeautifulSoup
 
 from articles.models import Article, Source, SourceCategory
 
-WEBSITES = [
+class TheGuardianSpider():
+    URL = 'https://www.theguardian.com/sitemaps/news.xml'
+
+    def start_scraper(self):
+        request = requests.get(self.URL)
+        soup = BeautifulSoup(request.content, 'html.parser')
+        articles = soup.find_all("url")
+        for article in articles:
+            item = {}
+            item['url'] = article.find('loc').text
+            item['publisher'] = article.find('news:news').find('news:publication').find('news:name').text
+            item['headline'] = article.find('news:news').find('news:title').text
+            item['keywords'] = article.find('news:news').find('news:keywords').text
+            item['publication_date'] = article.find('news:news').find('news:publication_date').text
+            more = requests.get(item['url'])
+            #print(more.text)
+            more_soup = BeautifulSoup(more.content, 'html.parser')
+            x = more_soup.find("meta", {"name":"author"})
+            item['author'] = x["content"] if x else None
+            print(item['url'])
+            try:
+                ps = more_soup.find("div", {"itemprop":"articleBody"}).find_all('p')
+                body = [x.text for x in ps]
+                print(body)
+                print(item)
+            except:
+                print("Error \n"*5)
+            
+            
+
+"""WEBSITES = [
     'bcc-news',
     'cnn',
     'the-new-york-times',
@@ -80,6 +105,6 @@ class ArticleSpider():
                             page=n
                     )
                     for w, article in enumerate(r['articles']):
-                        print(w, article['source'])
+                        print(w, article['source'])"""
         
         

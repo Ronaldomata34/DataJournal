@@ -1,0 +1,1 @@
+THE_GUARDIAN_URL = 'https://www.theguardian.com/sitemaps/news.xml'
