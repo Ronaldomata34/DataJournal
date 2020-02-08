@@ -1,45 +1,40 @@
 from django.db import models
 from django.utils import timezone
 
-
-class SourceCategory(models.Model):
+# Create your models here.
+class Publisher(models.Model):
     name = models.CharField(max_length=55)
-
-    def __str__(self):
-        return self.name
-    
-class Source(models.Model):
-    slug = models.CharField(max_length=55)
-    name = models.CharField(max_length=55)
-    description = models.TextField()
     url = models.URLField(max_length=255)
-    category = models.ForeignKey('SourceCategory', related_name='article_category', on_delete=models.CASCADE)
-    language = models.CharField(max_length=55)
     country = models.CharField(max_length=55)
-    to_scrape = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
-
-
-class ArticleCategory(models.Model):
-    name = models.CharField(max_length=55)
+    to_scrape = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
 
 class Article(models.Model):
-    source = models.ForeignKey('Source', related_name='article_source', on_delete=models.CASCADE)
-    category = models.ForeignKey('ArticleCategory', related_name='article_category', on_delete=models.CASCADE)
-    author = models.CharField(max_length=55)
-    title = models.CharField(max_length=255)
-    descripcion = models.TextField()
+    publisher = models.ForeignKey('Publisher', related_name='article_publisher', on_delete=models.CASCADE)
     url = models.URLField(max_length=255)
-    url_image = models.URLField(max_length=255)
-    published_at = models.DateTimeField(default=timezone.now)
+    section = models.CharField(max_length=55)
+    subsection = models.CharField(max_length=100)
+    keywords = models.CharField(max_length=255)
+    author = models.CharField(max_length=55)
+    headline = models.CharField(max_length=255)
     content = models.TextField()
+    content_length = models.IntegerField()
+    published_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "{} - {}".format(self.source.name, self.author)
+        return "{} - {}".format(self.publisher.name, self.author)
 
 
+"""Publisher (meta og:site_name) - e.g. Mirror
+Article URL - e.g. https://www.mirror.co.uk/sport/tennis/serena-williams-wins-first-title-
+21263972
+Section (first URL path / og:section) - e.g. Sports
+Subsection (second URL path) - e.g. Tennins
+Keywords (meta keywords) - e.g. Serena Williams,Caroline Wozniacki,Australian Open
+Authors (meta article:author) - e.g. Hassan Rashed
+Headline (og:title) - e.g. Serena Williams wins first title in three years at Auckland Classic
+Publication date (article:published_time) - e.g. 2020 01 12T0751 06Z
+Article body length - e.g. 1300 words
+Useful libraries: https://newspaper.readthe"""

@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'datajournal.settings.base')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'datajournal.settings.local')
 
 application = get_wsgi_application()
